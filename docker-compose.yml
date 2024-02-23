@@ -1,0 +1,52 @@
+version: '3'
+services:
+  nginx:
+    container_name: web
+    image: nginx:latest
+    ports:
+      - ${NGINX_PORT}:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./www/html:/var/www/html
+    depends_on:
+      - php
+  php:
+    container_name: php
+    build: ./php
+    volumes:
+      - ./www/html:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DOCKER_ENV=true
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_PORT=${MYSQL_PORT}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+  db:
+    container_name: db
+    platform: linux/x86_64
+    image: mysql:latest
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    volumes:
+      - ./initdb.d:/docker-entrypoint-initdb.d # DBの初期データ
+      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf # bashで日本語文字化けする問題の解決
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - TZ=${TZ}
+
+  phpmyadmin:
+    container_name: admin
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      - PMA_ARBITRARY=1
+      # - PMA_HOST=db #mysqlサービス名を指定
+      - PMA_HOST=${MYSQL_HOST} #mysqlサービス名を指定
+    ports:
+      - ${ADMIN_PORT}:80
+    depends_on:
+      - db
