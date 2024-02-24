@@ -2,7 +2,7 @@
 
 ## 環境構築
 
-`.env`ファイルに以下を記述
+<!-- `.env`ファイルに以下を記述
 
 ```env
 MYSQL_HOST=mysql
@@ -13,7 +13,7 @@ MYSQL_DATABASE=my_db
 TZ=Asia/Tokyo
 ADMIN_PORT=3307
 NGINX_PORT=8080
-```
+``` -->
 
 ターミナルを起動して以下を実行
 
